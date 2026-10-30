@@ -84,7 +84,9 @@ def serve(pages: Dict[str, PageFn], json_routes: Optional[Dict[str, JsonFn]] = N
         httpd = HTTPServer((host, port), handler)
     except OSError as e:
         print("[web] 바인딩 실패 %s:%d (%s)" % (host, port, e))
-        print("[web] 폴백: 같은 HTML을 파일로 저장하세요 → webapp.dashboard_fallback(pages, 'report.html')")
+        if isinstance(e, PermissionError):
+            print("[web] 소켓 생성 자체가 막힘 → Codex 샌드박스 안일 가능성. 사람이 IDE 터미널에서 직접 실행하거나 승인 후 재시도.")
+        print("[web] 그래도 안 되면 폴백: 같은 HTML을 파일로 저장 → webapp.dashboard_fallback(pages, 'outputs')")
         return False
     print("[web] Serving on http://%s:%d  (routes: %s)" % (host, port, ", ".join(sorted(list(pages) + list(json_routes or {})))))
     sys.stdout.flush()
