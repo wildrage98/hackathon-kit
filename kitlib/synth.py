@@ -1,16 +1,8 @@
-"""synth — 합성 센서 데이터 + 이상/품질문제 주입 + 정답표 (stdlib only).
+"""synth — 합성 센서 데이터 + 이상/품질 문제 주입 + 정답.
 
-언제 쓰나: 담당자가 샘플 데이터를 안 주거나 적게 줄 때, 그리고 **검증용**으로 "이상이 어디 있는지
-아는 데이터"가 필요할 때. 정답(truth.json)이 있으니 evalmetrics로 탐지율을 숫자로 보일 수 있다.
-→ "테스트 통과"가 아니라 "심은 이상 7개 중 6개 탐지, 오탐 2건"이라고 쓸 수 있게 된다.
-
-  rows, truth = generate(n_equipment=5, minutes=240, interval_s=10, seed=7)
-  write(rows, truth, "data/synth.csv", "data/synth_truth.json")
-
-주입되는 것
-  이상(anomaly): spike(순간 급등), drift(서서히 상승), level_shift(계단), stuck(고착), noise(분산 증가)
-  품질(quality): missing(결측), duplicate(중복 행), reversal(시간 역전), gap(수신 끊김)
-  상태(state): RUN/IDLE/MAINT 전환 — IDLE/MAINT 구간은 값이 낮고 판정 제외 대상
+  rows, truth = generate(n_equipment=5, minutes=240, interval_s=10, seed=7, ...)
+  write(rows, truth, csv_path, truth_path)
+  anomaly: spike / drift / level_shift / stuck / noise    quality: missing / duplicate / reversal / gap    state: RUN/IDLE/MAINT
 CLI: python -m kitlib.synth --out data/synth.csv --minutes 240
 """
 from __future__ import annotations

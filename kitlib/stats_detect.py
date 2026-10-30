@@ -1,18 +1,13 @@
-"""stats_detect — 설명 가능한 통계 기반 이상 탐지 (stdlib only).
+"""stats_detect — 단변량 통계 탐지. 반환 list[dict(index, value, score, flag, reason)].
 
-언제 쓰나: 담당자가 정상 범위를 숫자로 못 줄 때("평소와 다르면 알려달라"). 임계치 룰(rules.py)의
-보조로 쓴다. 모두 단변량·온라인 계산이라 "왜 이상인가"를 숫자로 설명할 수 있다.
-
-탐지기 선택 가이드
-  rolling_zscore  갑작스런 스파이크. 최근 window개 평균/표준편차 대비 몇 σ인가.
-  ewma            느린 드리프트. 지수가중 이동평균이 기준선에서 k·σ 벗어나면.
-  cusum           작은 평균 이동이 누적될 때 (공정 중심 이동). 양/음 누적합이 h를 넘으면.
-  iqr_bounds      분포 기반 정적 경계. 정상 구간 데이터로 (Q1-1.5IQR, Q3+1.5IQR)을 구해 rules로 넘긴다.
-  rate_of_change  급변(단위시간당 변화량). 온도 급상승 등.
-  stuck           센서 고착(값이 n개 연속 동일) — quality.py에도 있지만 값 단위로 쓰고 싶을 때.
-
-반환은 전부 list[dict]이고 각 dict에 index, value, score, flag, reason 이 들어간다.
-NaN/None은 건너뛴다(점수 None).
+  rolling_zscore(values, window=30, threshold=3.0, min_periods=10)   스파이크
+  ewma(values, alpha) / ewma_detect(values, alpha=0.2, k=3.0, baseline_n=50)   드리프트
+  cusum(values, target=None, k=None, h=None, baseline_n=50)   평균 이동 누적
+  iqr_bounds(values, k=1.5) → (lo, hi, info)   정적 경계 → rules.Rule(lo, hi)
+  rate_of_change(values, seconds, threshold)   급변
+  stuck(values, n=10)   고착
+  summarize(results)
+None/NaN은 건너뜀.
 """
 from __future__ import annotations
 

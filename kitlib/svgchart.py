@@ -1,12 +1,8 @@
-"""svgchart — 의존성 없는 SVG 차트 (stdlib only).
+"""svgchart — 의존성 없는 inline SVG 차트 (문자열 반환).
 
-언제 쓰나: 대시보드/리포트에 추세·임계선·이상 구간을 그려야 하는데 **외부 CDN(Chart.js 등)을
-못 쓰는** 환경일 때. 응시 환경은 외부 브라우저 접근이 막혀 있으므로 CDN 로드는 실패한다고
-가정한다. 결과는 문자열이라 HTML에 그대로 넣으면 된다 (report.Report.svg / webapp).
-
-  line_chart({"temp":[(x,y),...]}, thresholds=[("hi",80)], bands=[(x0,x1,"이상")], title=..)
-  bar_chart(["E1","E2"], [3,7], title=..)
-x는 숫자(초·인덱스) 또는 datetime. 수천 점은 자동으로 다운샘플(max_points).
+  line_chart({"name": [(x, y), ...]}, width, height, title, thresholds=[(label, y)], bands=[(x0, x1, label)], points=[(x, y, label)], y_label, max_points)
+  bar_chart(labels, values, width, height, title, highlight=[label])
+x: 숫자 또는 datetime. max_points 초과 시 다운샘플.
 """
 from __future__ import annotations
 
