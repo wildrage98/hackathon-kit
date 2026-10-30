@@ -4,6 +4,24 @@
 모니터링용 세션 분리, 토큰 사용량 간접 평가), 가이드(권장 모델 Sol 6.1/Terra 5.6/Luna 6, 업데이트 금지,
 에이전트 응답시간 고려한 위임).
 
+## 0. 사전 체험(2026-10-30)에서 직접 확인한 것
+- Codex **v0.163.0**, 상태줄 `GPT-6.1-Sol default · ~` — cwd는 홈(/home/user). 스킬 메커니즘 동작(`openai-docs` 스킬을 스스로 읽음) → `$plan-verify`도 `.agents/skills`에 두면 뜬다. MCP는 `codex_worktrees` 3개뿐, 추가 불가·시도 금지
+- **샌드박스**: `python3 -m http.server` → `PermissionError: [Errno 1] Operation not permitted`(소켓 생성 차단). "You approved codex to always run commands that start with …" 식 접두어 승인 후에야 실행. `curl`도 승인 필요, `ss`는 netlink 차단 → 서버·HTTP 확인은 사람이 IDE 터미널에서
+- "Failed to open browser … No valid browsers detected" — Codex는 브라우저를 못 연다. 포트 미리보기로 사람이 확인
+- "Failed to paste image: clipboard unavailable (X11)" — 이미지 붙여넣기 불가. 프롬프트는 파일 경로로 지시
+- 외부 HTTPS 읽기는 됐다(curl로 openai 문서 수신). 그래도 쓰지 않는다 — 필요한 건 kit 안에 있고, 외부 접근은 전부 기록
+- GitHub·MCP 연결을 묻자 Codex 응답 끝에 **"git push 및 차단 우회를 통한 무단 외부 반출 금지 … 민·형사상 책임"** 경고문이 플랫폼에 의해 삽입됐다 → 그 주제는 입에 올리지 않는다
+- 한 줄 요청("간단한 지뢰찾기 만들어줘")에도 Codex가 테스트까지 알아서 했다 — 즉 결과물 품질이 아니라 **내 지시·검증·판단의 기록**이 변별점이다
+
+## 0-1. 사전 체험 대화에서 고칠 습관 (실전에서 그대로 하면 Intent·Cognition 감점)
+| 사전 체험에서 한 것 | 실전에서 할 것 |
+|---|---|
+| "접속하면 인사말을 보여 주는 간단한 웹 페이지" (목표만) | 목표 + 제약(stdlib, 포트, 파일 위치) + 완료 기준(실행 명령·기대 출력) + 출력 형식 |
+| 결과를 읽지 않고 다음 요청 | 핵심 함수 1개는 열어 읽고, "틀릴 수 있는 입력 3개"를 묻고, 1개를 테스트로 |
+| 오른쪽 메신저를 한 번도 안 씀 | 첫 15분에 질문 묶음 2회, 합의서 확인 1회, 60/120분 체크인 — 전부 채점 자료 |
+| "can you see mcp", "github 접속 방법", "모니터 모니터링 프로그램" | 과제와 무관한 탐색은 0회. 궁금하면 시험 후 |
+| 승인 프롬프트에 always 승인 | 서버·네트워크는 거절하고 내가 터미널에서. 파일 쓰기·테스트만 승인 |
+
 ## 1. 세션 구조
 - **메인 세션 1개**: 구현. `prompts/00-kickoff.md`로 시작 (AGENTS.md 읽기 + 역할 고정)
 - **검토 세션 1개** (선택): 메인이 만든 계획/코드를 "모르는 사람" 입장에서 읽게 함 (`prompts/06-presubmit-review.md`). 두 세션이 서로의 출력을 교차 검증 — Cognition 점수

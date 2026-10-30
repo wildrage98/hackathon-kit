@@ -24,9 +24,9 @@
 ## 1. 모든 유형 공통 순서 (시간표는 docs/TIMEBOX.md)
 
 ```
-0-15분   README 정독 → tools/preflight.py env → 담당자 인터뷰 (playbook/stakeholder-interview.md)
-15-30분  합의서(docs/AGREEMENT.md) 담당자 확인 → PLAN.md → Codex $plan-verify
-30-60분  최소 실행본: 입력 읽기(csvio) → 핵심 로직 1개 → 결과 파일. 반드시 돌아가게.
+0-15분   clone+setup → tools/preflight.py env → README 정독 → 오른쪽 메신저로 담당자 인터뷰 (playbook/stakeholder-interview.md)
+15-30분  합의서(docs/AGREEMENT.md) 담당자 확인 → Codex 시작(prompts/00) → PLAN.md → $plan-verify → tools/new_project.sh <이름>
+30-60분  최소 실행본: 입력 읽기(csvio) → 핵심 로직 1개 → 결과 파일. 반드시 돌아가게. (프로젝트는 하위 폴더, 명령 순서는 EXAM-DAY.md)
 60-100분 기능 추가 (한 번에 하나, 실행 확인, DECISIONS 한 줄)
 100분    체크포인트: 지금 제출 가능? 아니면 범위 축소 (TIMEBOX 우선순위)
 100-130  보조 유형(대시보드/리포트), 품질 처리
@@ -52,7 +52,11 @@
 | 상황 | 대처 |
 |---|---|
 | pip install이 안 됨 | kitlib은 stdlib 전용. pandas 없이 간다. requirements.txt 비워둔다. preflight가 알려줌 |
-| 서버가 안 뜸 (소켓 차단/승인 반복) | `webapp.serve()`가 False → `dashboard_fallback()`으로 정적 HTML 저장, README에 "파일로 열기" 명시. 15분 이상 씨름 금지 |
+| Codex가 서버/curl 실행 시 PermissionError·승인 반복 (사전 체험에서 실제 발생) | Codex 샌드박스가 소켓을 막는다. 서버·curl은 **내가 IDE 터미널 탭에서** 실행하고 Codex에겐 결과 파일(outputs/)로 검증시킨다. 승인을 주더라도 "always run commands that start with python3 src/main.py" 처럼 접두어 한정 |
+| 터미널에서도 서버가 안 뜸 | `webapp.serve()`가 False → `dashboard_fallback()`으로 정적 HTML 저장, README에 "파일로 열기" 명시. 15분 이상 씨름 금지 |
+| Codex가 브라우저를 못 엶 ("No valid browsers detected") | 정상. 웹 IDE의 포트 미리보기(3000 등) 또는 원격 데스크톱 Chromium으로 내가 확인 |
+| 붙여넣기가 안 됨 (이미지는 확실히 불가) | 프롬프트는 `hackathon-kit/prompts/0N-*.md 를 읽고 수행해` 로 지시. 스크린샷 대신 텍스트로 설명 |
+| 과제 README가 루트에 있고 루트가 git 저장소(홈) | 루트 파일 수정 X. `tools/new_project.sh <이름>` 하위 폴더에 작업. 커밋은 `git add <이름> docs logs` (−A 금지) |
 | 외부 CDN 안 됨 (차트 안 그려짐) | svgchart로 inline SVG. JS 라이브러리 금지 |
 | 담당자가 기준(정상 범위)을 안 줌 | `stats_detect.iqr_bounds`로 **제안**해서 확정받는다. "제가 정상 구간 데이터로 이렇게 잡겠습니다. 괜찮습니까?" 대화 기록이 점수 |
 | 샘플 데이터가 없음/적음 | `python -m kitlib.synth` 로 합성 + 정답. 담당자에게 스키마만 확인. 합성 성능≠실제 성능 명시 |
@@ -62,6 +66,8 @@
 | 테스트 짤 시간 없음 | 최소 1개: 경계값(기준과 같을 때) 테스트. tests/test_basic.py 에 이미 있음 |
 | 요구사항이 서로 모순 | 담당자에게 둘 중 뭐가 우선인지 묻고, 답을 AGREEMENT.md에 적는다. 추측 금지 |
 | 담당자 에이전트 응답이 느림 | 질문을 한 번에 3~5개 묶어 보낸다. 기다리는 동안 preflight/scaffold 진행 |
+| 담당자 채널이 어디인지 모르겠음 | 오른쪽 메신저(사전 체험의 "Cofa Helper 과제 도우미" 자리). Enter=전송, Shift+Enter=줄바꿈. 코드는 안 짜주고 질문·설명·리뷰만 — 그게 Intent 채점 자료 |
+| GitHub·MCP·외부 연결이 궁금함 | 묻지 않는다. 사전 체험에서 언급만으로 반출 금지 경고문이 Codex 응답에 삽입됐다(기록 남음). 필요한 건 전부 hackathon-kit 안에 있다 |
 
 ## 4. 절대 하지 말 것 (평가 축 기준)
 
@@ -73,6 +79,7 @@
 ## 5. 파일 지도
 
 ```
+EXAM-DAY.md                  시험 당일 순서표 (환경 사실 + 명령 그대로) ← 09:55에 이것부터
 playbook/
   README.md                  ← 지금 이 문서
   stakeholder-interview.md   담당자 에이전트 인터뷰 순서·질문 묶음·합의서 쓰는 법
