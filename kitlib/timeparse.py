@@ -1,12 +1,8 @@
-"""timeparse — 제각각인 타임스탬프를 datetime으로 (stdlib only).
+"""timeparse — 타임스탬프 파싱.
 
-언제 쓰나: 센서/로그 데이터의 시각 컬럼이 'Z', '+09:00', '+0900', 공백 구분, epoch(초/밀리초),
-'YYYYMMDDHHMMSS' 등으로 섞여 있을 때. Python 3.9/3.10의 fromisoformat은 'Z'를 못 읽으므로
-직접 처리한다.
-
-원칙
-- 오프셋이 있으면 aware datetime, 없으면 naive 그대로 둔다 (default_tz를 주면 붙여준다).
-- aware/naive가 섞이면 비교가 깨지므로 add_parsed_time()이 한쪽으로 통일한다.
+  parse_ts(value, default_tz=None) → datetime|None   ('Z', ±HH:MM, ±HHMM, epoch 초/밀리초, YYYYMMDDHHMMSS, 여러 strptime 형식)
+  add_parsed_time(rows, col, out="_ts", default_tz=None, unify="naive") → {parsed, failed}   aware/naive 통일
+  sort_by_time(rows, ts_col), infer_interval(ts_list), fmt(dt), KST
 """
 from __future__ import annotations
 

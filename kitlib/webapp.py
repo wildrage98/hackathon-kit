@@ -1,12 +1,10 @@
-"""webapp — http.server 기반 초경량 대시보드 (stdlib only).
+"""webapp — http.server 기반 대시보드.
 
-언제 쓰나: "운영자가 화면에서 본다"가 요구사항이고, 서버를 띄울 수 있을 때. Flask가 없어도 된다.
-응시 환경 규칙: 0.0.0.0 바인딩, 내장 Browser 탭에서 포트·경로로 접속. 포트는 PORT 환경변수.
-
-  serve(pages={"/": lambda: html_str}, json={"/api/state": lambda: dict}, port=8000)
-  - 바인딩 실패(샌드박스가 소켓을 막음 등)하면 예외 대신 False를 돌려주고 폴백 안내를 출력한다.
-    → 그때는 같은 html_str을 report.html 파일로 저장해 제출한다 (dashboard_fallback 참고).
-  - 페이지는 refresh초마다 자동 새로고침(meta refresh) — JS 없이도 '라이브'처럼 보인다.
+  serve(pages={"/": fn->html}, json_routes={"/api/x": fn->obj}, port=None(PORT env, 기본 8000), host="0.0.0.0", block=True, quiet=False)
+    바인딩 실패 시 False 반환. block=False면 서버 객체 반환. /health 기본 제공.
+  wrap_page(body_html, title, refresh=10)   meta refresh 자동 새로고침
+  can_bind(host, port) → bool
+  dashboard_fallback(pages, out_dir) → {route: path}   정적 HTML 저장
 """
 from __future__ import annotations
 
@@ -63,7 +61,7 @@ def _make_handler(pages: Dict[str, PageFn], json_routes: Dict[str, JsonFn], quie
 
 
 def can_bind(host: str = "0.0.0.0", port: int = 0) -> bool:
-    """샌드박스가 서버 소켓을 허용하는지 1초 안에 확인 (preflight에서 쓴다)."""
+    """서버 소켓 바인딩 가능 여부."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -85,8 +83,8 @@ def serve(pages: Dict[str, PageFn], json_routes: Optional[Dict[str, JsonFn]] = N
     except OSError as e:
         print("[web] 바인딩 실패 %s:%d (%s)" % (host, port, e))
         if isinstance(e, PermissionError):
-            print("[web] 소켓 생성 자체가 막힘 → Codex 샌드박스 안일 가능성. 사람이 IDE 터미널에서 직접 실행하거나 승인 후 재시도.")
-        print("[web] 그래도 안 되면 폴백: 같은 HTML을 파일로 저장 → webapp.dashboard_fallback(pages, 'outputs')")
+            print("[web] 소켓 생성 불가 → 터미널에서 직접 실행하거나 승인 후 재시도.")
+        print("[web] 폴백: webapp.dashboard_fallback(pages, 'outputs')")
         return False
     print("[web] Serving on http://%s:%d  (routes: %s)" % (host, port, ", ".join(sorted(list(pages) + list(json_routes or {})))))
     sys.stdout.flush()
