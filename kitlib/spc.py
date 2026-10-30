@@ -1,12 +1,9 @@
-"""spc — 통계적 공정관리 기초 (stdlib only).
+"""spc — 관리도·공정능력.
 
-언제 쓰나: "관리도", "관리 한계선", "공정 능력(Cpk)", "Western Electric 룰" 같은 용어가 과제나
-담당자 입에서 나올 때. 반도체 현장에서는 센서 임계치보다 SPC 용어로 기준을 말하는 경우가 많다.
-
-  imr_limits       개별값-이동범위 관리도 (샘플 1개씩 들어올 때). UCL/LCL = mean ± 2.66·MRbar
-  xbar_r_limits    부분군(n=2~10) 평균-범위 관리도. 상수표 A2/D3/D4 사용
-  western_electric 룰 1~4 (3σ 1점 / 2σ 밖 3중 2 / 1σ 밖 5중 4 / 한쪽 8연속)
-  cp_cpk           공정능력. Cpk<1.0 부족, 1.33 이상 양호 (업계 관행, 담당자 기준 우선)
+  imr_limits(values) → mean, ucl, lcl, sigma_est (MRbar/1.128, ±2.66·MRbar)
+  xbar_r_limits(subgroups) → n=2~10, A2/D3/D4
+  western_electric(values, mean, sigma) → [{index, z, rules:[1..4]}]
+  cp_cpk(values, lsl, usl) → cp, cpk, mean, sigma, verdict
 """
 from __future__ import annotations
 

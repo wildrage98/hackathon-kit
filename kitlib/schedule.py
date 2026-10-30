@@ -1,17 +1,11 @@
-"""schedule — 단순 디스패칭/스케줄링 (stdlib only).
+"""schedule — 규칙 기반 디스패칭 (비선점, 설비당 동시 1작업).
 
-언제 쓰나: "작업(로트/정비/검사)을 설비에 배정", "우선순위대로 처리 순서 결정", "납기 지연 최소화"
-같은 운영 과제. 최적화 솔버 없이 **규칙 기반 디스패칭**으로 설명 가능한 기준선을 만든다.
-(180분 안에 MILP를 돌리는 것보다, 규칙 3개를 비교해 지표로 고르는 편이 설명·검증이 쉽다)
-
-디스패칭 규칙
-  FIFO      도착 순
-  SPT       처리시간 짧은 것 먼저 (평균 흐름시간 최소)
-  EDD       납기 빠른 것 먼저 (최대 지연 최소)
-  PRIORITY  priority 값 큰 것 먼저 (동률은 EDD)
-  CR        Critical Ratio = (납기-현재)/남은 처리시간 작은 것 먼저 (동적)
-
-모델: 각 job은 한 번만 처리, 각 machine은 한 번에 한 job. eligible로 설비 제약.
+  Job(id, dur, ready=0, due=None, priority=0, eligible=None)
+  Machine(id, down=[(start, end)])
+  dispatch(jobs, machines, rule)  rule: FIFO / SPT / EDD / PRIORITY / CR
+  metrics(schedule, machines) → makespan, tardy_jobs, total_tardiness, max_tardiness, utilization
+  compare_rules(jobs, machines) → 규칙별 지표 표
+  to_gantt_markdown(schedule)
 """
 from __future__ import annotations
 
@@ -117,7 +111,7 @@ def metrics(sched: List[Dict], machines: Sequence[Machine]) -> Dict:
 
 
 def compare_rules(jobs, machines, rules=("FIFO", "SPT", "EDD", "PRIORITY", "CR")) -> List[Dict]:
-    """여러 규칙을 돌려 지표를 나란히 — 담당자에게 '어떤 목표(지연 vs 처리량)인가'를 확인받는 근거."""
+    """여러 규칙의 지표를 나란히 비교한다."""
     return [metrics(dispatch(jobs, machines, r), machines) for r in rules]
 
 

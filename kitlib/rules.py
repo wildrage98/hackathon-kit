@@ -1,15 +1,12 @@
-"""rules — 설명 가능한 임계치 판정 엔진 (stdlib only).
+"""rules — 임계치/범주 판정.
 
-언제 쓰나: "정상 범위를 벗어나면 경보", "스펙 in/out 판정", "조건별 등급 분류", "출하 가능/불가"
-같이 기준이 숫자/범주로 주어지는 모든 과제. ML보다 먼저 이것으로 기준선을 만든다 —
-담당자가 준 기준을 그대로 코드화하므로 판단 근거를 100% 설명할 수 있다.
-
-설계 포인트 (서술형 단골)
-- 경계값: inclusive=(True, True)면 lo<=v<=hi 가 정상. "기준값과 정확히 같을 때"를 명시적으로 다룬다.
-- 등급: severity 문자열은 SEVERITY 순서로 비교한다 (INFO < WARN < CRIT). 여러 룰이 걸리면 최고 등급.
-- 지속 조건: min_consecutive=N 이면 같은 키에서 N회 연속 위반해야 '확정'(단발 노이즈 억제).
-- 상태별 기준: when={'state': 'RUN'} 처럼 조건이 맞는 행에만 룰을 적용한다 (정비 중엔 판정 안 함).
-- 근거: Hit에 값·기준·룰 이름·메시지가 남는다 → 리포트/대시보드에 그대로 노출.
+  Rule(name, column, lo=None, hi=None, inclusive=(True, True), severity="WARN", when={}, min_consecutive=1, message="", allowed=None)
+    .applies(row) / .violation(row) → Hit|None
+  evaluate_row(row, rules) → [Hit]
+  evaluate_series(rows, rules, key_cols, out_col="_hits", level_col="_level")   키별 연속 횟수 추적
+  load_rules(list|path) / rules_to_markdown(rules)
+  SEVERITY = INFO < WARN < CRIT, sev_rank, max_sev
+inclusive=(True,True): lo<=v<=hi 정상. 값 None → 판정 안 함. when 불일치 → 적용 안 함.
 """
 from __future__ import annotations
 
