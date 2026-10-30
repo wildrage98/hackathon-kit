@@ -5,7 +5,12 @@
 git clone https://github.com/wildrage98/hackathon-kit.git && bash hackathon-kit/setup.sh
 python3 tools/preflight.py env
 ```
-- clone 불가 시: zip 업로드 → `unzip -q uploads/hackathon-kit-main.zip && mv hackathon-kit-main hackathon-kit && bash hackathon-kit/setup.sh`
+clone 불가 시: `hackathon-kit-main.zip` 업로드(uploads/) 후
+```bash
+mkdir -p /tmp/kit && (unzip -q uploads/hackathon-kit*.zip -d /tmp/kit || python3 -m zipfile -e uploads/hackathon-kit*.zip /tmp/kit)
+mv "$(dirname "$(find /tmp/kit -maxdepth 2 -name setup.sh | head -1)")" hackathon-kit && bash hackathon-kit/setup.sh
+python3 tools/preflight.py env
+```
 - `docs/TIMEBOX.md` 종료 시각, 제출 시작 시각(−10분)
 
 ## 1. 15분
