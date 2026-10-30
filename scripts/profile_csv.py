@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""profile_csv.py — CSV 한 개를 마크다운 요약 + 담당자 질문 후보로 (원본을 Codex에 읽히지 않기 위해).
+"""profile_csv.py — CSV 요약(마크다운) + 질문 후보.
 
   python tools/profile_csv.py data/x.csv [--ts timestamp] [--key equipment] [--quality]
   python tools/profile_csv.py data/x.csv --ts timestamp --key equipment > docs/PROFILE.md
@@ -33,7 +33,7 @@ def main(argv=None):
         print("시각 파싱: %s\n" % r)
     p = profile.profile(rows, ts_col=ts_col, key_cols=a.key)
     print(profile.to_markdown(p))
-    print("\n## 담당자 질문 후보\n")
+    print("\n## 질문 후보\n")
     for q in profile.questions_from_profile(p):
         print("- " + q)
     if a.quality:

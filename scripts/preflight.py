@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""preflight.py — 응시 환경 점검 + 제출 전 점검 (stdlib only, Python 3.8+).
+"""preflight.py — 환경 점검 + 제출 전 점검 (stdlib only, Python 3.8+).
 
-  python3 tools/preflight.py env                       # 시작 직후: 파이썬·패키지·소켓·쓰기권한·git·codex
+  python3 tools/preflight.py env                       # 파이썬·패키지·소켓·쓰기권한·git
   python3 tools/preflight.py submit --project <폴더>    # 제출 10분 전: 필수 파일·로그 증거·비밀키·테스트 실행 여부
   python3 tools/preflight.py all --project <폴더>
 
@@ -10,8 +10,7 @@ docs/(DECISIONS, VERIFICATION)는 작업 루트 → 없으면 프로젝트 폴�
 종료 코드: 0 = 점검한 항목 모두 OK / 1 = 문제 있음 / 2 = 점검한 항목이 없음(통과로 읽지 말 것)
 출력은 logs/preflight_<시각>.log 에도 저장된다 (실행 증거).
 
-응시 환경 메모(사전 체험 2026-10-30): 작업 루트 = 홈(/home/user) = git 저장소. 숨김 폴더(.npm/.codex/.claude/.aws …)는
-도구 상태·캐시이므로 스캔하지 않는다. Codex 샌드박스 안에서는 소켓 생성이 막힌다(PermissionError) — 승인 또는 IDE 터미널.
+숨김 폴더는 스캔하지 않는다.
 """
 from __future__ import annotations
 
@@ -100,7 +99,7 @@ def env_checks():
     if shutil.which("codex"):
         rc, out = _run(["codex", "--version"], timeout=15)
         line = out.splitlines()[0] if out else "?"
-        warn("codex 버전", line + ("" if "0.163" in line else "  ← 안내서 기준 0.163, 업데이트 금지"))
+        warn("codex 버전", line + ("" if "0.163" in line else "  (0.163 아님)"))
     # 서버 소켓
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -112,7 +111,7 @@ def env_checks():
         check("server socket bind 0.0.0.0", True, "가능 (임시 포트 %d)" % port)
     except OSError as e:
         check("server socket bind 0.0.0.0", False,
-              "불가: %s → Codex 샌드박스 안이면 승인 후 재시도 또는 IDE 터미널에서 직접 실행; 그래도 안 되면 정적 HTML 폴백" % e)
+              "불가: %s → 터미널에서 직접 실행/승인 후 재시도, 안 되면 정적 HTML 폴백" % e)
     # 쓰기 권한
     try:
         p = ".preflight_write_test"
@@ -143,7 +142,6 @@ def env_checks():
     for p in (".agents/skills", ".codex/skills"):
         if os.path.isdir(p):
             warn("repo skills", "%s: %s" % (p, ", ".join(sorted(os.listdir(p)))))
-    warn("브라우저", "Codex는 브라우저를 못 연다 → 웹 IDE '포트 미리보기' 또는 원격 데스크톱 Chromium")
 
 
 SECRET_PATTERNS = [
@@ -209,7 +207,7 @@ def submit_checks(project=None, required=("README.md",), test_cmd=None):
     dpath = find_doc("DECISIONS.md")
     if dpath:
         n = len(re.findall(r"^- \[\d{1,2}:\d{2}\]", open(dpath, encoding="utf-8", errors="ignore").read(), re.M))
-        check("DECISIONS.md 기록 줄", n >= 3, "%d줄 (서술형 재료)" % n)
+        check("DECISIONS.md 기록 줄", n >= 3, "%d줄" % n)
     # 비밀키 스캔 (프로젝트 + 루트 docs/tools, 숨김 폴더 제외)
     scanned, found = 0, []
     roots = [proj] + ([d for d in ("docs", "tools") if proj != "." and os.path.isdir(d)])

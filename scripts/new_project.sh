@@ -2,8 +2,6 @@
 # new_project.sh — 제출물 뼈대를 **하위 폴더**에 생성 (작업 루트에서 실행). 이미 있는 파일은 건드리지 않는다.
 # 사용: bash tools/new_project.sh <이름>        예: bash tools/new_project.sh sensor-monitor
 # 결과: <이름>/{src/main.py, tests/test_basic.py, README.md, requirements.txt, .gitignore, kitlib/, config, data, outputs, logs}
-# 이유: 응시 환경은 작업 루트가 홈(/home/user)이고 과제 README.md가 루트에 있다 → 루트를 어지럽히지 않고
-#       프로젝트 폴더 하나가 제출물이 되게 한다. 과제가 폴더/파일명을 지정하면 그걸 따르고 kitlib만 복사한다.
 set -euo pipefail
 NAME="${1:-project}"
 ROOT="$(pwd)"
@@ -32,7 +30,7 @@ cat > "$P/src/main.py" <<'PY'
     python3 src/main.py run      --input data/xxx.csv --out outputs
     python3 src/main.py validate --input data/xxx.csv
     python3 src/main.py report
-    python3 src/main.py serve    # 0.0.0.0:$PORT  ← 사람이 IDE 터미널에서 직접 실행 (Codex 샌드박스는 소켓 차단)
+    python3 src/main.py serve    # 0.0.0.0:$PORT (터미널에서 직접 실행)
 """
 import os
 import sys
@@ -94,7 +92,7 @@ class TestRequirements(unittest.TestCase):
         self.assertTrue(True)
 
     def test_boundary_equal_to_limit(self):
-        """경계값: 기준값과 정확히 같을 때의 판정을 고정한다 (서술형 단골)"""
+        """경계값: 기준값과 정확히 같을 때의 판정을 고정한다"""
         from kitlib.rules import Rule
         r = Rule("hi", "v", hi=10, inclusive=(True, True))
         self.assertIsNone(r.violation({"v": 10}))      # 포함 → 정상
