@@ -1,16 +1,10 @@
-"""cli — 제출물 실행 진입점 스켈레톤 (stdlib only).
+"""cli — argparse 서브커맨드 + 파일 로깅 (logs/<시각>_<cmd>.log).
 
-언제 쓰나: 모든 과제. 평가자는 "README에 적힌 명령 한 줄"로 실행한다. 서브커맨드 run / validate /
-report / serve 를 고정해 두면 README·검증 문서·테스트가 같은 명령을 가리킨다.
-로그는 콘솔+logs/<시각>_<cmd>.log 에 동시에 남는다 (실행 증거).
-
-사용 (src/main.py):
     from kitlib.cli import App
-    app = App("설비 이상 징후 모니터링")
-    @app.command("run", help="입력 CSV 분석 → outputs/")
-    def run(args, log):
-        ...
-    app.add_argument("run", "--input", default="data/synth.csv")
+    app = App("name")
+    @app.command("run", help="...")
+    def run(args, log): ...
+    app.add_argument("run", "--input", default="data/x.csv")
     if __name__ == "__main__": app.main()
 """
 from __future__ import annotations

@@ -1,18 +1,10 @@
-"""alerts — 경보 생명주기 상태머신 (stdlib only).
+"""alerts — 경보 상태머신.
 
-언제 쓰나: "경보 시작·변경·종료 기록"이 요구될 때. 판정(rules/stats_detect)은 '이 시점이
-이상인가'만 말하고, 운영자는 '언제 시작해서 언제 끝났고 등급이 어떻게 바뀌었나'를 본다.
-그 변환이 이 모듈이다.
-
-동작 (키 = 설비 등 단위)
-  feed(key, ts, level, reason)
-    level=None      정상 관측
-    level='WARN'…   이상 관측 (rules.SEVERITY 순서)
-  - open_after=N  : N회 연속 이상이어야 START (단발 노이즈 억제)
-  - close_after=M : M회 연속 정상이어야 END   (깜빡임 억제, 히스테리시스)
-  - 등급이 오르면 ESCALATE, 내리면 DEESCALATE (이벤트로 남기고 alert_id 유지)
-  - 종료 후 다시 이상이면 새 alert_id로 START (재발은 새 경보 — 담당자와 확정할 정책)
-
+  AlertManager(open_after=N, close_after=M).feed(key, ts, level, reason)
+    level None=정상, 'WARN'/'CRIT'… (rules.SEVERITY 순서)
+    N회 연속 이상 → START, M회 연속 정상 → END, 등급 변화 → ESCALATE/DEESCALATE, 종료 후 재발 → 새 alert_id
+  .events / .active() / .close_all() / .to_rows()
+  run_from_levels(rows, key_cols, ts_col, level_col, reason_col, open_after, close_after)
 이벤트: dict(event, alert_id, key, ts, level, prev_level, reason, duration_s)
 """
 from __future__ import annotations

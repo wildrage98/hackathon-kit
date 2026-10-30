@@ -1,13 +1,9 @@
-"""csvio — CSV를 안전하게 읽고 쓴다 (stdlib only).
+"""csvio — CSV 읽기/쓰기.
 
-언제 쓰나: 과제 데이터가 CSV/TSV로 주어졌는데 인코딩(cp949/utf-8-sig)이나 구분자가
-불확실할 때. pandas가 없어도 list[dict]로 바로 다룰 수 있게 한다.
-
-핵심 판단
-- 인코딩은 utf-8-sig → utf-8 → cp949 → euc-kr → latin-1 순서로 시도한다.
-  (한국 현장 데이터는 cp949가 흔하고, 엑셀 저장본은 BOM이 붙는다)
-- 구분자는 첫 줄에서 , \t ; | 중 가장 많이 나온 것을 택한다.
-- 숫자처럼 보이는 값은 int/float로 바꾸고 빈 문자열은 None으로 둔다 (결측 추적용).
+  read_csv(path, encoding=None, delimiter=None, coerce_types=True) -> (rows, meta)
+    인코딩 utf-8-sig → utf-8 → cp949 → euc-kr → latin-1 순 시도, 구분자(, \t ; |) 자동, 숫자 변환, 빈값/NA 토큰 → None
+  write_csv(path, rows, fieldnames=None, encoding="utf-8-sig")
+  to_columns(rows), numeric(rows, col)
 """
 from __future__ import annotations
 

@@ -1,15 +1,11 @@
-"""evalmetrics — 탐지/분류 성능을 숫자로 (stdlib only).
+"""evalmetrics — 탐지/분류 지표.
 
-언제 쓰나: VERIFICATION.md에 "정답 대비 얼마나 맞췄나"를 적을 때. 정답은 synth.truth 또는
-담당자가 준 라벨. 이벤트(구간) 탐지는 점 단위 정확도가 의미 없으므로 **구간 매칭**으로 센다.
-
-  event_prf(truth_intervals, detections, tolerance_s=60)
-     truth_intervals: [(start, end)]  detections: [ts] 또는 [(start, end)]
-     - 탐지 하나가 어떤 정답 구간(±tolerance) 안에 들면 그 정답은 '잡힘'
-     - 어느 정답에도 안 들면 오탐(FP). 정답 하나에 탐지가 여러 개여도 TP는 1.
-     - latency: 정답 시작 → 첫 탐지까지 초 (빠를수록 좋음)
+  event_prf(truth_intervals, detections, tolerance_s=60, truth_keys=None, det_keys=None)
+     truth_intervals [(start, end)], detections [ts] 또는 [(start, end)] → tp/fp/fn/precision/recall/f1/mean_latency_s/missed
+     탐지가 정답 구간(±tolerance) 안이면 TP(정답당 1회), 어디에도 안 들면 FP. 키를 주면 같은 키끼리만 매칭.
+  point_prf(y_true_bool, y_pred_bool)
   classification_report(y_true, y_pred) → 클래스별 P/R/F1, accuracy, confusion
-  point_prf(y_true_bool, y_pred_bool) → 점 단위 P/R/F1 (라벨이 점 단위일 때만)
+  report_markdown(m)
 """
 from __future__ import annotations
 
