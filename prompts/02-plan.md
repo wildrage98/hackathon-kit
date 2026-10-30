@@ -1,4 +1,4 @@
-# 02 — 계획 (담당자 확정 기준이 QUESTIONS.md 에 들어간 뒤)
+# 02 — 계획 (확정 기준이 QUESTIONS.md 에 들어간 뒤)
 
 ```
 $plan-verify 단계 1을 수행해라.

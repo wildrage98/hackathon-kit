@@ -10,4 +10,4 @@
 6. README 에 빠진 것(입력 위치, 포트, 미구현 목록)을 지적해라.
 출력: 표 1개 + 지적 사항 목록. 칭찬 생략.
 ```
-그 다음 터미널에서 `python tools/preflight.py submit`.
+그 다음 터미널에서 `python3 tools/preflight.py submit --project <이름>`.
