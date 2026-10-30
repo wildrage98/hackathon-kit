@@ -6,8 +6,8 @@
 
 | 구간 | 누적 | 할 일 | 산출물 | 완료 |
 |---|---|---|---|---|
-| 0–15 | 15 | setup → preflight env → README 정독, 필수 제출물 적기, 유형 판별(playbook) → 질문 1차 | SUBMIT_CHECK, QUESTIONS | ☐ |
-| 15–30 | 30 | 담당자 질문 2차(기준·정책 확정) → AGREEMENT.md 확인받기 → PLAN.md | AGREEMENT, PLAN | ☐ |
+| 0–15 | 15 | clone+setup → preflight env → README 정독, 필수 제출물 적기, 유형 판별(playbook) → 메신저로 질문 1차 | SUBMIT_CHECK, QUESTIONS | ☐ |
+| 15–30 | 30 | 담당자 질문 2차(기준·정책 확정) → AGREEMENT.md 확인받기 → Codex 시작 → PLAN.md → new_project.sh <이름> | AGREEMENT, PLAN, <이름>/ | ☐ |
 | 30–60 | 60 | **최소 실행본** (입력 → 핵심 로직 → 출력) | 돌아가는 뼈대 | ☐ |
 | 60–100 | 100 | 핵심 기능 1·2 추가, 각각 실행 확인 | 로그 | ☐ |
 | **100** | — | **체크포인트: 지금 제출해도 되는 상태인가?** 아니면 범위 축소 | — | ☐ |
