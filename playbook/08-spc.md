@@ -1,42 +1,37 @@
-# H. SPC · 관리도 · 공정 능력
-
-반도체 현장은 "임계치"보다 "관리한계(UCL/LCL)", "Cpk", "런 룰"로 말한다. A(센서)나 B(수율) 과제에서
-담당자가 이 용어를 쓰면 이 플레이북을 얹는다. 핵심 모듈: `kitlib.spc`
+# H. SPC (보조)
 
 ## 단서
-관리도, 관리한계, UCL/LCL, 스펙 한계(USL/LSL), Cp/Cpk, 공정능력, 런 룰/Western Electric, 부분군, 이동범위.
+관리도, 관리한계, UCL/LCL, USL/LSL, Cp/Cpk, 공정능력, 런 룰, 부분군, 이동범위
 
-## 담당자 인터뷰 추가 질문
-1. 관리한계는 **주어지나**(기준 기간에서 고정) 데이터에서 계산하나 → 계산이면 기준 기간 확정
-2. 부분군 크기(샘플 1개씩=I-MR, n개 묶음=Xbar-R)
-3. 스펙 한계(USL/LSL)는 관리한계와 별개 — 둘 다 있나 (스펙 이탈=불량, 관리 이탈=공정 변화)
-4. 적용할 런 룰(1·2·3·4 중) 과 룰별 조치 등급
-5. Cpk 판정 기준(1.33? 1.0?)은 회사 기준이 있나
+## 질문
+1. 관리한계 주어지나 vs 계산 → 기준 기간
+2. 부분군 크기 (1 = I-MR, n = Xbar-R)
+3. 스펙 한계 별도 여부 (스펙 이탈 = 불량, 관리 이탈 = 공정 변화)
+4. 런 룰 1·2·3·4 중 적용, 룰별 등급
+5. Cpk 판정 기준 (1.33? 1.0?)
 
-## 모듈 순서
+## 순서
 ```python
-lim = spc.imr_limits(baseline_values)            # mean, ucl, lcl, sigma_est
-viol = spc.western_electric(values, lim["mean"], lim["sigma_est"])   # [{index, z, rules:[1,2..]}]
-cap = spc.cp_cpk(values, LSL, USL)               # cp, cpk, verdict
-# 관리한계를 rules.Rule(lo=lcl, hi=ucl, severity="WARN")로 넘기면 A 파이프라인(alerts)과 합쳐진다
-# 부분군이면 spc.xbar_r_limits([[...5개],[...5개],...])
+lim = spc.imr_limits(baseline_values)
+viol = spc.western_electric(values, lim["mean"], lim["sigma_est"])
+cap = spc.cp_cpk(values, LSL, USL)
+# rules.Rule(lo=lcl, hi=ucl, severity="WARN") 로 A 파이프라인에 합류
+# 부분군: spc.xbar_r_limits([[...],[...]])
 ```
 
-## 최소 실행본
-I-MR 한계 계산 + 룰1(3σ 이탈) 표 + 차트(svgchart에 ucl/lcl threshold) 30분.
+## 최소
+I-MR 한계 + 룰1 표 + 차트(ucl/lcl threshold)
 
 ## 검증
-- 알려진 평균/σ의 합성 데이터에서 UCL ≈ mean+3σ (MRbar/1.128 추정의 오차 범위 안)
-- 룰 1~4 각각을 일부러 만든 시퀀스로 트리거 (테스트 `TestSPC` 참고)
-- Cpk: 중심이 스펙 중앙이면 Cp==Cpk, 치우치면 Cpk<Cp
+- 알려진 평균/σ 합성 → UCL ≈ mean+3σ
+- 룰 1~4 각각 트리거 시퀀스 (`TestSPC`)
+- Cpk: 중심 = 스펙 중앙이면 Cp==Cpk
 
 ## 함정
-- 기준 기간에 이상이 섞여 σ 과대 → 한계 넓어져 미탐. 기준 기간 선정 근거 기록
-- 설비별 중심이 다른데 전역 한계 → 룰4(8연속 한쪽) 폭발 (스모크 테스트에서 실제로 187건) → 설비별 한계
-- 관리한계와 스펙한계 혼동 → 리포트에 두 선을 다른 색/라벨로
-- 자기상관 강한 센서(온도)에 I-MR 적용 시 과탐 → 샘플링 간격 늘리거나 EWMA 병행, 한계를 명시
+- 기준 기간에 이상 섞임 → σ 과대
+- 설비별 중심 다른데 전역 한계 → 룰4 폭발 → 설비별
+- 관리한계 vs 스펙한계 혼동 → 다른 색/라벨
+- 자기상관 센서 I-MR 과탐 → 간격 늘리기/EWMA
 
-## 서술형 예상 질문 → 골격
-- "UCL은 어떻게 계산했나?" → I-MR: mean ± 2.66·MRbar (σ≈MRbar/1.128), 기준 기간 n개. 한계: 정규성·독립 가정
-- "스펙 이탈과 관리 이탈의 차이?" → 스펙=고객 요구(불량), 관리=공정 자체 변동(조치 신호). 둘을 다른 등급으로
-- "Cpk 0.9면 어떤 의미?" → 가까운 스펙 쪽 여유가 2.7σ, 불량률 수천 ppm 수준 예상 → 중심 이동/산포 축소 어느 쪽인지는 Cp와 비교
+## Q
+UCL 계산(2.66·MRbar, 가정) / 스펙 vs 관리 이탈 / Cpk 0.9 의미
