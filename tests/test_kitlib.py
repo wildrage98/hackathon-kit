@@ -1,5 +1,4 @@
-"""kitlib 회귀 테스트 (stdlib unittest). 실행: python -m unittest discover -s tests -v
-각 테스트는 '서술형에서 물을 법한 경계 조건'을 고정한다."""
+"""kitlib 회귀 테스트. 실행: python -m unittest discover -s tests -v"""
 import json
 import os
 import sys
