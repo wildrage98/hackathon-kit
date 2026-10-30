@@ -1,14 +1,11 @@
-"""groupstats — 불량/수율 요인 분석 (stdlib only).
+"""groupstats — 이진 결과(양/불량) × 요인 컬럼 집계.
 
-언제 쓰나: "불량 원인 분석", "어느 설비/로트/레시피/시간대에서 불량이 몰리나", "수율 저하 요인"
-처럼 **이진 결과(양품/불량)와 여러 요인 컬럼**이 있는 데이터. ML 없이 집계+통계로
-"어떤 요인에서 불량률이 전체 대비 몇 배인가"를 근거와 함께 뽑는다.
-
-순서: rate_by(요인별 불량률·lift) → chi_square(우연인가?) → rank_factors(요인 순위)
-     → numeric_compare(수치 변수는 양/불량 평균 차이, Cohen's d) → crosstab(두 요인 교차)
-
-주의 (서술형 단골): 상관≠인과. 표본이 작은 그룹(n<30)은 lift가 커도 신뢰 낮음 → min_n으로 거른다.
-심슨의 역설 가능성 → 교차표로 교란 요인 확인.
+  rate_by(rows, group_col|fn, flag_col, min_n) → [{group, n, bad, rate, lift}]  (rate 내림차순)
+  chi_square(table) → chi2, dof, sig_0.05, sig_0.01, low_expected_cells
+  rank_factors(rows, factors, flag_col, min_n) → 요인별 chi2 순위 + worst_group/rate/lift
+  numeric_compare(rows, col, flag_col) → 양/불량 평균·표준편차, Cohen's d
+  crosstab(rows, a, b, flag_col), crosstab_markdown(ct)
+불량 토큰: BAD_TOKENS / GOOD_TOKENS (_is_bad)
 """
 from __future__ import annotations
 

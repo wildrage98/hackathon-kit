@@ -1,11 +1,8 @@
-"""profile — 낯선 데이터를 3분 안에 파악하는 요약 (stdlib only).
+"""profile — 데이터 요약.
 
-언제 쓰나: 데이터를 받자마자. 원본을 눈으로 훑는 대신 이 요약을 Codex와 나에게 보여주고,
-담당자에게 할 질문(단위? 상태 코드 의미? 결측 이유?)을 뽑는다. 토큰 절약 효과도 크다
-(원본 CSV를 통째로 Codex에 읽히지 않는다).
-
-출력: 컬럼별 타입/결측률/고유값/최소·최대·평균·표준편차(숫자) 또는 상위 값(범주),
-시각 컬럼이 있으면 범위·추정 주기, 키 컬럼별 행 수.
+  profile(rows, ts_col=None, key_cols=(), top_k=5, sample=20000) → dict(columns, n_rows, time_range, interval, by_key)
+  to_markdown(p)
+  questions_from_profile(p) → 질문 후보 문자열 목록
 """
 from __future__ import annotations
 
@@ -78,7 +75,7 @@ def to_markdown(p: Dict) -> str:
 
 
 def questions_from_profile(p: Dict) -> List[str]:
-    """프로파일에서 담당자에게 물을 질문 후보를 자동 생성한다."""
+    """프로파일에서 질문 후보를 생성한다."""
     qs: List[str] = []
     for c, i in p["columns"].items():
         if i["missing_pct"] > 0:

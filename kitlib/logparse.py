@@ -1,16 +1,11 @@
-"""logparse — 텍스트 로그 파싱·분류·집계 (stdlib only).
+"""logparse — 텍스트 로그 파싱·분류·집계.
 
-언제 쓰나: 설비 로그/알람 로그/정비 메모처럼 **비정형 텍스트 줄**이 입력일 때.
-"에러 코드별 건수", "설비별 알람 빈도", "메모를 카테고리로 분류", "특정 패턴 전후 추적".
-
-  PatternSet.add(name, regex)  이름 있는 그룹 (?P<ts>...) (?P<level>...) 으로 필드 추출
-  parse_lines(lines, ps)       매칭된 dict 목록 + 매칭 안 된 줄 (unmatched는 반드시 보고한다)
-  classify_text(text, cats)    키워드/정규식 사전으로 카테고리 + 근거(어떤 단어가 걸렸나)
-  aggregate(rows, by)          groupby count
-  context_window(lines, pred)  조건 줄 전후 N줄 (원인 추적용)
-
-서술형 포인트: 정규식이 못 잡은 줄(unmatched)을 몇 %인지 밝히고, 샘플을 보여 담당자에게
-형식을 확인받는 것이 "검증"이다.
+  PatternSet().add(name, regex)      named group (?P<ts>..) (?P<level>..) 으로 필드 추출. COMMON_PATTERNS 참고
+  parse_lines(lines, ps) → (rows, unmatched[(lineno, line)])
+  parse_kv(text) → dict
+  classify_text(text, {cat: [keywords]}) → (cat, evidence)
+  aggregate(rows, by_cols, top=None) → count 표
+  context_window(lines, pred, before, after)
 """
 from __future__ import annotations
 
@@ -102,7 +97,7 @@ def aggregate(rows: List[Dict], by: Sequence[str], top: Optional[int] = None) ->
 
 
 def context_window(lines: Sequence[str], pred: Callable[[str], bool], before: int = 3, after: int = 3) -> List[Dict]:
-    """pred가 참인 줄의 전후 문맥. 원인 추적/담당자 질문용 샘플 만들기."""
+    """pred가 참인 줄의 전후 문맥."""
     out = []
     for i, line in enumerate(lines):
         if pred(line):
