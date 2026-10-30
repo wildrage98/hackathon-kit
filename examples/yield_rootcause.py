@@ -1,4 +1,4 @@
-"""examples/yield_rootcause.py — 불량/수율 요인 분석 배선 예시 (학습용, 그대로 복사 금지).
+"""examples/yield_rootcause.py — 요인 집계 배선 예시 (참고용, 복사 금지).
 
 입력: 로트/웨이퍼 단위 CSV (요인 컬럼 여러 개 + 결과 컬럼 PASS/FAIL 또는 0/1)
 출력: 요인 순위표, 최악 그룹, 수치 변수 차이, 교차표 → report.md/html
@@ -48,7 +48,7 @@ def analyze(rows, result_col, factors, numerics, min_n=20):
         rep.h2("교차표 %s × %s (불량률)" % tuple(top2)).raw_md(groupstats.crosstab_markdown(ct))
         rep.text("교차표에서 특정 셀만 높으면 '조합 요인'(교호작용) 가능성. 단일 요인 결론 전에 확인할 것.")
     rep.h2("해석 주의").bullets([
-        "상관은 인과가 아니다 — 설비 차이가 실제 원인인지 담당자 확인 필요 (예: 해당 설비에 특정 제품이 몰림)",
+        "상관은 인과가 아니다 — 설비 차이가 실제 원인인지 확인 필요 (예: 해당 설비에 특정 제품이 몰림)",
         "표본 n<%d 그룹은 제외했다 (min_n)" % min_n,
         "카이제곱은 기대도수<5 셀이 있으면 신뢰도가 떨어진다 (표의 low_expected_cells)",
     ])

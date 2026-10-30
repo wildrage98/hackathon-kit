@@ -1,17 +1,11 @@
-"""examples/sensor_pipeline.py — kitlib 모듈을 어떻게 엮는지 보여주는 참고 배선 (학습용).
+"""examples/sensor_pipeline.py — kitlib 배선 예시 (참고용, 복사 금지).
 
-과제에 그대로 복사하지 말 것. 스키마·기준·정책은 담당자와 확정한 값으로 바꾸고, 가져다 쓴
-부분은 DECISIONS.md에 출처를 적는다. (이 파일 자체가 서술형에서 "왜 이렇게 했나"를 답할 수
-있는 구조의 예시다: 단계마다 근거 파일이 남는다)
+흐름: CSV → timeparse → quality(check/policy) → IQR 기준 제안 → rules(상태별·연속) → alerts → report → evalmetrics
 
-흐름:  CSV → 시각 파싱 → 품질 점검/정책 → (기준 없으면) 정상 구간 IQR로 기준 제안
-       → 룰 판정(상태별·지속조건) → 경보 상태머신 → 리포트/대시보드 → 정답 대비 검증
-
-실행:
     python examples/sensor_pipeline.py synth --out data/synth.csv
     python examples/sensor_pipeline.py run --input data/synth.csv --out outputs
     python examples/sensor_pipeline.py validate --input data/synth.csv --truth data/synth_truth.json
-    python examples/sensor_pipeline.py serve --input data/synth.csv            # 0.0.0.0:$PORT
+    python examples/sensor_pipeline.py serve --input data/synth.csv
 """
 from __future__ import annotations
 
@@ -39,10 +33,7 @@ def load(path: str):
 
 
 def propose_rules(clean, baseline_state: str = "RUN", k_warn: float = 2.0, k_crit: float = 4.0):
-    """담당자 기준이 없을 때: 설비별·센서별 정상(RUN) 구간 앞 1/3을 기준 구간으로 보고 IQR 경계를 제안.
-    WARN = Q1-2·IQR ~ Q3+2·IQR (2회 연속), CRIT = Q1-4·IQR ~ Q3+4·IQR (1회).
-    → 이 표를 담당자에게 보여주고 확정받는다 (QUESTIONS.md '확정 기준 메모'에 기록).
-    주의: 기준 구간 안에 이상이 섞여 있으면 경계가 넓어진다(=미탐). 기준 구간 선정 근거를 DECISIONS에 적을 것."""
+    """설비별·센서별 RUN 구간 앞 1/3을 기준 구간으로 IQR 경계 제안. WARN = k_warn·IQR(2연속), CRIT = k_crit·IQR(1회)."""
     out = []
     for eq in sorted({r["equipment"] for r in clean}):
         for s in SENSORS:
