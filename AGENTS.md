@@ -7,11 +7,12 @@
 1. `README.md`와 과제 안내를 먼저 끝까지 읽는다. 필수 파일명·제출물 목록을 `docs/SUBMIT_CHECK.md`에 옮겨 적는다.
 2. `docs/PLAN.md`를 채우기 전에는 코드를 쓰지 않는다. 계획은 10분 안에 끝낸다.
 3. 모르는 업무 기준은 추측하지 말고 `docs/QUESTIONS.md`에 적어 사용자가 담당자에게 묻게 한다.
+4. 작업 루트(홈 디렉터리)의 과제 `README.md`·기존 파일은 수정하지 않는다. 프로젝트 코드는 **프로젝트 폴더**(`tools/new_project.sh <이름>`로 만든 폴더, 또는 과제가 지정한 폴더) 안에만 둔다. `docs/`·`logs/`·`tools/`는 작업 루트.
 
 ## 1. 구현 원칙
 - **최소 실행본 우선**: 데이터 읽기 → 핵심 로직 → 결과 출력까지 한 번에 돌아가는 뼈대를 먼저 만들고, 그 다음 기능을 붙인다.
 - 한 번에 하나의 기능. 기능 하나 끝날 때마다 실행해서 확인한 뒤 다음으로 간다.
-- **표준 라이브러리 우선** (pip가 막힐 수 있다). 루트의 `kitlib/`(stdlib 전용 빌딩블록)을 먼저 쓴다:
+- **표준 라이브러리 우선** (pip가 막힐 수 있다). 프로젝트 폴더 안의 `kitlib/`(stdlib 전용 빌딩블록)을 먼저 쓴다:
   csvio·timeparse(읽기) → quality·profile(품질) → rules·stats_detect·groupstats·spc·schedule·logparse·reconcile(핵심)
   → alerts(경보 이력) → report·svgchart·webapp(출력) → synth·evalmetrics(검증). 각 파일 머리말에 "언제 쓰나"가 있다.
   모듈을 쓰면 `docs/DECISIONS.md`에 `출처: kitlib/<모듈>, 수정: ...` 한 줄을 남긴다. 쓰지 않는 모듈은 지워도 된다.
@@ -24,7 +25,9 @@
 ## 2. 웹 서비스가 있을 때
 - 서버는 반드시 `0.0.0.0`에 바인딩하고, 시작 시 포트를 stdout에 출력한다. (`kitlib.webapp.serve`가 이렇게 한다)
 - 포트는 환경변수 `PORT`로 바꿀 수 있게 한다 (기본값 하나 정해두기).
+- **서버 실행과 HTTP 확인(curl)은 사용자가 IDE 터미널에서 직접 한다.** Codex 샌드박스는 소켓 생성이 막혀(PermissionError) 승인이 반복된다. 코드는 서버 없이도 결과 파일(outputs/)로 검증 가능하게 만든다.
 - 바인딩 실패나 승인 프롬프트 반복이 15분 넘으면 멈추고 `webapp.dashboard_fallback`으로 정적 HTML을 만든다. README에 명시.
+- Codex는 브라우저를 열 수 없다. 확인은 웹 IDE의 포트 미리보기(사용자가 한다).
 - 외부 CDN(JS/CSS 라이브러리)은 쓰지 않는다 (외부 접근 차단). 차트는 `kitlib.svgchart` inline SVG.
 - 서버를 띄운 터미널은 닫지 않는다.
 
@@ -49,6 +52,7 @@
 
 ## 6. 하지 말 것
 - 외부 네트워크로 데이터·코드를 내보내는 작업 (git push, 업로드)
+- `git add -A` / `git add .` (작업 루트가 홈 디렉터리라 캐시·도구 폴더가 딸려간다) → `git add <프로젝트폴더> docs logs` 처럼 경로 지정
 - Codex 자체 업데이트, 플랫폼 설정 변경
 - 요청하지 않은 대규모 리팩터링
 - 동일 요청 반복 — 응답을 기다리는 중이면 기다린다

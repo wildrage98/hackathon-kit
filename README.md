@@ -4,20 +4,23 @@ AI 해커톤(Codex 응시 환경) 개인 작업 하네스.
 **문제 풀이 코드는 포함하지 않는다.** 절차·양식·검증 도구·stdlib 전용 빌딩블록·유형별 플레이북만 담는다.
 쓴 모듈은 `docs/DECISIONS.md`에 출처를 적고, 서술형에서 설명할 수 있는 만큼만 쓴다.
 
-## 응시 환경에서 (한 줄)
+## 시험 당일 → **[EXAM-DAY.md](EXAM-DAY.md)** (사전 체험에서 확인한 환경 기준, 순서 그대로)
 
 ```bash
 git clone https://github.com/wildrage98/hackathon-kit.git && bash hackathon-kit/setup.sh
+python3 tools/preflight.py env
+bash tools/new_project.sh <이름>        # 프로젝트는 하위 폴더 (작업 루트 = 홈 = git 저장소, 과제 README가 루트에 있음)
 ```
 
-setup.sh가 하는 일
-1. `AGENTS.md` → 작업 폴더 루트 (Codex가 자동으로 읽음)
+setup.sh가 하는 일 (루트의 기존 파일은 덮어쓰지 않음)
+1. `AGENTS.md` → 작업 루트 (이미 있으면 보존하고 kit 규칙을 뒤에 병합)
 2. `skills/` → `~/.codex/skills`, `.agents/skills`, `.codex/skills` (`$plan-verify`, `$decision-log`)
-3. `kitlib/` → 작업 폴더 루트 (stdlib 전용 모듈 18개, `from kitlib import rules` 로 사용)
+3. `kitlib/` → 작업 루트 (stdlib 전용 모듈 18개). `new_project.sh`가 프로젝트 폴더로 다시 복사해 제출물에 포함
 4. `templates/` → `./docs/` (TIMEBOX / QUESTIONS / AGREEMENT / PLAN / DECISIONS / VERIFICATION / SUBMIT_CHECK)
 5. `scripts/` → `./tools/` (run_and_log.sh, smoke.sh, new_project.sh, preflight.py, profile_csv.py)
+6. `.gitignore` (hackathon-kit/, 캐시, 홈의 도구 상태 폴더) + git 신원 확인
 
-사전 체험(15분)에서 할 것: 위 명령 → `python tools/preflight.py env` → `codex` 에서 `/skills` 에 plan-verify가 보이는지.
+응시 환경 사실(2026-10-30 사전 체험): 작업 루트 `/home/user`=홈=git 저장소 · Python 3.11 · Node 22 · Codex 0.163 (GPT-6.1-Sol) · Codex 샌드박스는 소켓/네트워크 차단(승인 필요) · Codex는 브라우저 못 엶(IDE 포트 미리보기) · 이미지 붙여넣기 불가 · 오른쪽 메신저 = 담당자 채널(코드 안 짬) · GitHub/MCP 언급 시 경고문 자동 삽입.
 
 ## 어떤 상황에 무엇을 쓰나 → [playbook/README.md](playbook/README.md)
 
@@ -37,6 +40,7 @@ setup.sh가 하는 일
 ## 구성
 
 ```
+EXAM-DAY.md          시험 당일 순서표 (환경 사실 + 0~180분 명령 그대로)
 AGENTS.md            Codex 행동 규칙 (계획 먼저, 최소 실행본, stdlib 우선, 0.0.0.0, 로그 없는 통과 금지, 결정 기록)
 setup.sh             설치
 kitlib/              stdlib 전용 빌딩블록 (Python 3.8+, 외부 의존성 0)
