@@ -81,5 +81,5 @@ playbook/
   01-sensor-anomaly.md … 08-spc.md   유형별 상세
 prompts/                     Codex에 붙여넣는 단계별 프롬프트 (00~07)
 examples/                    모듈을 엮는 배선 예시 2개 (복사 금지, 읽고 적용)
-kitlib/                      stdlib 전용 모듈 17개 (각 파일 머리말에 "언제 쓰나")
+kitlib/                      stdlib 전용 모듈 18개 (각 파일 머리말에 "언제 쓰나")
 ```
