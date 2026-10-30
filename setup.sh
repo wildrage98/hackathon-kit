@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# hackathon-kit 설치: 현재 작업 폴더(과제 루트)에서 실행
+# hackathon-kit 설치: 작업 루트에서 실행
 # 사용: bash hackathon-kit/setup.sh
-# 응시 환경(사전 체험 2026-10-30 확인): 작업 루트 = 홈(/home/user) = git 저장소, 과제 README.md가 루트에 있음.
-#   → 루트의 기존 파일(README.md, AGENTS.md 등)은 덮어쓰지 않는다. 프로젝트 코드는 tools/new_project.sh <이름> 으로 하위 폴더에.
 set -euo pipefail
 
 KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,7 +12,7 @@ if [ "$ROOT" = "$HOME" ]; then
   echo "[kit] 작업 루트가 홈 디렉터리 — 커밋은 경로 지정(git add <폴더> docs logs), git add -A 금지"
 fi
 
-# 1. AGENTS.md — 기존 파일이 있으면 보존하고 kit 규칙을 뒤에 덧붙인다 (과제 지시가 우선)
+# 1. AGENTS.md — 기존 파일이 있으면 보존하고 뒤에 덧붙인다
 if [ -f "$ROOT/AGENTS.md" ]; then
   if grep -q "hackathon-kit 추가 규칙" "$ROOT/AGENTS.md"; then
     echo "[kit] AGENTS.md 에 kit 규칙이 이미 병합되어 있음 — 건너뜀"
@@ -31,7 +29,7 @@ else
   echo "[kit] AGENTS.md 설치"
 fi
 
-# 2. 스킬 — Codex 버전에 따라 위치가 달라서 세 곳 모두에 넣는다 (기존의 다른 스킬은 건드리지 않음)
+# 2. 스킬 — 세 위치 모두 (기존 다른 스킬은 유지)
 for dest in "$CODEX_HOME/skills" "$ROOT/.agents/skills" "$ROOT/.codex/skills"; do
   mkdir -p "$dest"
   for d in "$KIT"/skills/*/; do
@@ -101,10 +99,4 @@ date '+%Y-%m-%d %H:%M:%S' > "$ROOT/docs/START_TIME.txt"
 echo "[kit] 시작 시각 기록: $(cat "$ROOT/docs/START_TIME.txt")"
 
 echo
-echo "[kit] 완료. 다음 순서 (hackathon-kit/EXAM-DAY.md):"
-echo "  1) python3 tools/preflight.py env        # 환경 확인 (소켓/pip/코덱스/git)"
-echo "  2) docs/TIMEBOX.md 에 종료 시각 적기"
-echo "  3) 과제 README 정독 → docs/SUBMIT_CHECK.md 에 필수 파일 → hackathon-kit/playbook/README.md 로 유형 판별"
-echo "  4) 오른쪽 메신저로 담당자 인터뷰 (hackathon-kit/playbook/stakeholder-interview.md) → docs/AGREEMENT.md"
-echo "  5) codex 첫 메시지: 'AGENTS.md 와 hackathon-kit/prompts/00-kickoff.md 를 읽고 그 안의 지시를 그대로 수행해'"
-echo "  6) 프로젝트 폴더: bash tools/new_project.sh <이름>   (과제가 폴더를 지정하면 그 폴더 사용)"
+echo "[kit] 완료. 다음: hackathon-kit/EXAM-DAY.md"
