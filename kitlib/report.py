@@ -1,11 +1,9 @@
-"""report — 마크다운/HTML 리포트 빌더 (stdlib only).
+"""report — 마크다운/HTML 리포트 빌더.
 
-언제 쓰나: 결과를 "운영자가 읽을 문서"로 내야 할 때. 서버를 못 띄우는 환경에서는
-HTML 리포트(차트는 svgchart로 inline)가 대시보드의 대체물이다. 제출물 docs/ 생성에도 쓴다.
-
-  r = Report("설비 이상 징후 리포트")
-  r.h2("요약").kv({"기간":..., "경보 수":...}).table(rows, cols).text("...").svg(svg_str)
-  r.save_md("docs/report.md"); r.save_html("report.html")
+  r = Report(title)
+  r.h2(t).h3(t).text(s).kv(dict).table(rows, cols=None, max_rows=50).bullets(list).code(s).svg(svg).raw_md(md)
+  r.to_markdown() / r.to_html() / r.save_md(path) / r.save_html(path)
+  md_table(rows, cols, max_rows)
 """
 from __future__ import annotations
 

@@ -1,22 +1,10 @@
-"""quality — 데이터 품질 점검과 처리 정책 (stdlib only).
+"""quality — 데이터 품질 점검과 처리 정책.
 
-언제 쓰나: 담당자가 "결측·중복·시간 역전·수신 끊김을 어떻게 처리했나"를 물을 것이 확실한
-과제(센서/로그/거래 데이터 전부). 점검(check) → 정책 적용(apply) → 로그 남기기 순서.
-
-점검 항목 (issue type)
-  missing        필수/값 컬럼이 None
-  duplicate      키+시각이 같은 행 (완전 중복 또는 키 중복)
-  time_reversal  같은 키 안에서 시각이 이전 행보다 과거
-  gap            같은 키 안에서 간격이 기대 주기의 gap_factor배 초과 (수신 끊김)
-  out_of_range   물리적으로 불가능한 값 (limits로 지정)
-  stuck          같은 키에서 값이 stuck_n개 이상 연속 동일 (센서 고착)
-  unparsed_time  시각 파싱 실패
-
-정책(apply_policy) — 기본값은 "보수적": 버리지 않고 표시(flag)한다.
-  duplicate: drop(첫 행만 유지) | flag
-  missing:   flag | drop | ffill(같은 키 직전 값)
-  time_reversal: sort(정렬로 해결) | drop
-  out_of_range: flag | null(값을 None으로)
+  check_quality(rows, ts_col="_ts", key_cols, value_cols, required_cols, expected_interval, gap_factor=3.0, limits, stuck_n=10)
+    → issues[{type,row,key,...}], counts, interval_seconds, summary_md
+  issue type: missing / duplicate / time_reversal / gap / out_of_range / stuck / unparsed_time
+  apply_policy(rows, issues, policy, ts_col, key_cols, value_cols) → (new_rows(_quality_flags 포함), log)
+    duplicate: drop|flag   missing: flag|drop|ffill   time_reversal: sort|drop   out_of_range: flag|null   unparsed_time: drop
 """
 from __future__ import annotations
 

@@ -1,13 +1,9 @@
-"""reconcile — 두 자료의 대사(정합성 비교) (stdlib only).
+"""reconcile — 두 자료 대사.
 
-언제 쓰나: "A 시스템 자료와 B 자료가 맞는지", "마스터 대비 누락/불일치 찾기", "전일 vs 금일 차이",
-"중복 키 찾기". 1차 예선의 '자료 정렬·비교' 유형의 도구화.
-
-  diff = reconcile.compare(rows_a, rows_b, key_cols=["lot"], compare_cols=["qty","status"], tol={"qty": 0.5})
-  diff["only_in_a"], diff["only_in_b"], diff["mismatch"], diff["dup_a"], diff["dup_b"], diff["summary"]
-
-키 정규화(normalize_key): 공백 제거·대문자·선행 0 제거 옵션 — 두 자료의 키 표기가 미묘하게 다른 것이
-대사 실패의 1위 원인이다. 어떤 정규화를 적용했는지 결과에 남긴다.
+  compare(rows_a, rows_b, key_cols, compare_cols, tol={col: 허용오차}, upper=False, strip_zeros=False)
+    → only_in_a / only_in_b / mismatch / dup_a / dup_b / summary
+  normalize_key(value, upper, strip_zeros)   공백 제거·대문자·선행 0 제거
+  summary_markdown(diff)
 """
 from __future__ import annotations
 
